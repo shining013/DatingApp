@@ -11,9 +11,13 @@ import androidx.recyclerview.widget.GridLayoutManager
 import androidx.recyclerview.widget.RecyclerView
 import com.autoever.jamanchu.R
 import com.autoever.jamanchu.models.User
+import com.google.firebase.Firebase
+import com.google.firebase.auth.FirebaseAuth
+import com.google.firebase.firestore.firestore
 
 class HomeFragment : Fragment() {
     val users:MutableList<User> = mutableListOf()
+    private lateinit var adapter: MyAdapter
 
     override fun onCreateView(
         inflater: LayoutInflater,
@@ -28,14 +32,38 @@ class HomeFragment : Fragment() {
         recyclerView.layoutManager = layoutManager
         return view
     }
+    fun fetchUsers() {
+        users.clear()
+        val db = Firebase.firestore
+        val auth = FirebaseAuth.getInstance()
+        val currentUser = auth.currentUser
+        val currentUserId = currentUser!!.uid
+
+        db.collection("users")
+            .get()
+            .addOnSuccessListener { documents ->
+                for (document in documents) {
+                    val user = document.toObject(User::class.java).copy(id = document.id)
+                    println("User: ${user.nickname}, Email: ${user.email}, Gender: ${user.gender}, Age:${user.age}")
+
+                    if (currentUserId != user.id) {
+                        users.add(user)
+                    }
+                }
+                adapter.notifyDataSetChanged()
+            }
+            .addOnFailureListener { exception ->
+                println("Error getting documents:$exception")
+            }
+    }
 }
 
 class MyAdapter(private val users: List<User>) : RecyclerView.Adapter<MyAdapter.ViewHolder>() {
     class ViewHolder(itemView: View) : RecyclerView.ViewHolder(itemView) {
-        val textView: TextView = itemView.findViewById(R.id.textView)
-        val imageView: ImageView = itemView.findViewById(R.id.imageView)
-        val buttonFriend: TextView = itemView.findViewById(R.id.buttonFriend)
-        val buttonChat: TextView = itemView.findViewById(R.id.buttonChat)
+        val textViewNick: TextView = itemView.findViewById(R.id.textViewNick)
+        val textViewIntroduce: TextView = itemView.findViewById(R.id.textViewIntroduce)
+        val textViewFriend: TextView = itemView.findViewById(R.id.textViewFriend)
+        val textViewChat: TextView = itemView.findViewById(R.id.textViewChat)
     }
 
     override fun onCreateViewHolder(parent: ViewGroup, viewType: Int): ViewHolder {
@@ -45,7 +73,9 @@ class MyAdapter(private val users: List<User>) : RecyclerView.Adapter<MyAdapter.
     }
 
     override fun onBindViewHolder(holder: ViewHolder, position: Int) {
-
+        val user = users[position]
+        holder.textViewNick.text = user.nickname
+        holder.textViewIntroduce.text = user.introduction
     }
 
     override fun getItemCount() = users.size
