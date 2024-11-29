@@ -23,7 +23,8 @@ class MyFragment : Fragment() {
             textViewLogout.setOnClickListener {
                 // Firebase 인증 로그아웃
                 FirebaseAuth.getInstance().signOut()
-
+                
+                // 인트로 화면으로 이동
                 val intent = Intent(requireContext(), IntroActivity::class.java)
                 intent.flags = Intent.FLAG_ACTIVITY_NEW_TASK or Intent.FLAG_ACTIVITY_CLEAR_TASK
                 startActivity(intent)
