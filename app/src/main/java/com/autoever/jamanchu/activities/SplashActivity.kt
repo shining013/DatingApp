@@ -9,7 +9,6 @@ import androidx.activity.enableEdgeToEdge
 import androidx.appcompat.app.AppCompatActivity
 import androidx.core.view.ViewCompat
 import androidx.core.view.WindowInsetsCompat
-import com.autoever.jamanchu.MainActivity
 import com.autoever.jamanchu.R
 import com.google.firebase.auth.FirebaseAuth
 

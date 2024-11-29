@@ -12,7 +12,6 @@ import android.widget.TextView
 import android.widget.Toast
 import androidx.activity.enableEdgeToEdge
 import androidx.appcompat.app.AppCompatActivity
-import com.autoever.jamanchu.MainActivity
 import com.autoever.jamanchu.R
 import com.autoever.jamanchu.models.Gender
 import com.autoever.jamanchu.models.User
