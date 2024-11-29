@@ -12,7 +12,13 @@
     <RelativeLayout
         android:layout_width="match_parent"
         android:layout_height="match_parent"
-        android:layout_above="@id/layoutBottom">
+        android:layout_above="@id/layoutBottom"
+        android:layout_marginBottom="-16dp">
+
+        <androidx.viewpager2.widget.ViewPager2
+            android:id="@+id/viewPager"
+            android:layout_width="match_parent"
+            android:layout_height="match_parent" />
 
         <TextView
             android:id="@+id/textView3"
@@ -29,10 +35,10 @@
             android:id="@+id/textViewTitle"
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
-            android:text="Jamanchu"
             android:layout_alignParentBottom="true"
             android:layout_marginStart="24dp"
             android:layout_marginBottom="40dp"
+            android:text="Jamanchu"
             android:textColor="@color/white"
             android:textSize="34sp" />
     </RelativeLayout>
