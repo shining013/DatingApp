@@ -1,0 +1,17 @@
+package com.autoever.jamanchu.models
+
+data class User(
+    val id: String = "",
+    val email: String = "",
+    val nickname: String = "",
+    val introduction: String = "",
+    val gender: Gender = Gender.FEMALE,
+    val age: Int = 0,
+    val image: String = "",
+    val friends: List<String> = emptyList()
+)
+
+enum class Gender {
+    MALE,
+    FEMALE
+}
