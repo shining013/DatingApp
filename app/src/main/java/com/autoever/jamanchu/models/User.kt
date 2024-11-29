@@ -1,7 +1,7 @@
 package com.autoever.jamanchu.models
 
 data class User(
-    val id: String = "",
+    var id: String = "",
     val email: String = "",
     val nickname: String = "",
     val introduction: String = "",
