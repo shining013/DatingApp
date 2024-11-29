@@ -28,16 +28,16 @@ class SplashActivity : AppCompatActivity() {
         Handler(Looper.getMainLooper()).postDelayed({
             val auth = FirebaseAuth.getInstance()
             val currentUser = auth.currentUser
+            var intent: Intent? = null
             if (currentUser != null) {
                 Log.d("IntroActivity",currentUser.toString())
-                val intent = Intent(this, MainActivity::class.java)
-                startActivity(intent)
-                finish()
+                intent = Intent(this, MainActivity::class.java)
             } else {
-                startActivity(Intent(this,IntroActivity::class.java))
-                intent.addFlags(Intent.FLAG_ACTIVITY_NEW_TASK or Intent.FLAG_ACTIVITY_CLEAR_TASK)
-                finish()
+                intent = Intent(this, IntroActivity::class.java)
+
             }
+            intent.addFlags(Intent.FLAG_ACTIVITY_NEW_TASK or Intent.FLAG_ACTIVITY_CLEAR_TASK)
+            startActivity(intent)
         }, 2000)
     }
 }
