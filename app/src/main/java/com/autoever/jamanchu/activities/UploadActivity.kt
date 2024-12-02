@@ -7,7 +7,9 @@ import android.content.pm.PackageManager
 import android.net.Uri
 import android.os.Bundle
 import android.provider.MediaStore
+import android.view.View
 import android.widget.Button
+import android.widget.FrameLayout
 import android.widget.ImageView
 import android.widget.TextView
 import android.widget.Toast
@@ -35,7 +37,7 @@ class UploadActivity : AppCompatActivity() {
     private var photoUri: Uri? = null
 
     private lateinit var imageView: ImageView
-
+    private lateinit var loadingOverlay: FrameLayout
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
         enableEdgeToEdge()
@@ -45,6 +47,8 @@ class UploadActivity : AppCompatActivity() {
             v.setPadding(systemBars.left, systemBars.top, systemBars.right, systemBars.bottom)
             insets
         }
+
+        loadingOverlay = findViewById(R.id.loadingOverlay)
 
         imageView = findViewById<ImageView>(R.id.imageView)
         val btnCamera = findViewById<TextView>(R.id.btnCamera)
@@ -64,6 +68,32 @@ class UploadActivity : AppCompatActivity() {
         // 업로드 선택
         findViewById<TextView>(R.id.textViewUpload).setOnClickListener {
             upload(imageUri!!)
+        }
+    }
+
+    private fun showLoading(isLoading: Boolean) {
+        loadingOverlay.visibility = if (isLoading) View.VISIBLE else View.GONE
+    }
+
+    private fun upload(uri: Uri) {
+        showLoading(true)
+
+        val storage = FirebaseStorage.getInstance()
+        val storageRef: StorageReference = storage.reference
+        val imageRef = storageRef.child("images/${System.currentTimeMillis()}.jpg")
+        val uploadTask: UploadTask = imageRef.putFile(uri)
+
+        uploadTask.addOnSuccessListener { taskSnapshot ->
+            imageRef.downloadUrl.addOnSuccessListener { downloadUrl ->
+                imageUri = null
+                showLoading(false)
+                FirebaseAuth.getInstance().currentUser?.email?.let { email ->
+                    updateUserImage(email, downloadUrl.toString())
+                } ?: Toast.makeText(this, "사용자 인증 정보를 찾을 수 없습니다", Toast.LENGTH_SHORT).show()
+            }
+        }.addOnFailureListener {
+            showLoading(false)
+            Toast.makeText(this, "업로드 실패했습니다. 다시 시도해주세요.", Toast.LENGTH_SHORT).show()
         }
     }
 
@@ -112,23 +142,7 @@ class UploadActivity : AppCompatActivity() {
             }
         }
     }
-    private fun upload(uri: Uri) {
-        val storage = FirebaseStorage.getInstance()
-        val storageRef: StorageReference = storage.reference
-        val imageRef = storageRef.child("images/${System.currentTimeMillis()}.jpg")
-        val uploadTask: UploadTask = imageRef.putFile(uri)
 
-        uploadTask.addOnSuccessListener { taskSnapshot ->
-            imageRef.downloadUrl.addOnSuccessListener { downloadUrl ->
-                imageUri = null
-                FirebaseAuth.getInstance().currentUser?.email?.let { email ->
-                    updateUserImage(email, downloadUrl.toString())
-                } ?: Toast.makeText(this, "사용자 인증 정보를 찾을 수 없습니다", Toast.LENGTH_SHORT).show()
-            }
-        }.addOnFailureListener {
-            Toast.makeText(this, "업로드 실패했습니다. 다시 시도해주세요.", Toast.LENGTH_SHORT).show()
-        }
-    }
 
     private fun updateUserImage(email: String, imageUri: String) {
         val db = Firebase.firestore
