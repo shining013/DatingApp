@@ -30,8 +30,7 @@ class SplashActivity : AppCompatActivity() {
             var intent: Intent? = null
             if (currentUser != null) {
                 Log.d("IntroActivity",currentUser.toString())
-//                intent = Intent(this, MainActivity::class.java)
-                intent = Intent(this, UploadActivity::class.java)
+                intent = Intent(this, MainActivity::class.java)
             } else {
                 intent = Intent(this, IntroActivity::class.java)
 

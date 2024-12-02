@@ -16,6 +16,7 @@ import com.google.firebase.Firebase
 import com.google.firebase.auth.FirebaseAuth
 import com.google.firebase.firestore.FirebaseFirestore
 import com.google.firebase.firestore.firestore
+import org.w3c.dom.Text
 
 class MyFragment : Fragment() {
     val db: FirebaseFirestore = Firebase.firestore
@@ -39,6 +40,10 @@ class MyFragment : Fragment() {
             
             // 프로필 이미지뷰
             val imageViewUser = view.findViewById<ImageView>(R.id.imageViewUser)
+            val textViewNickName = view.findViewById<TextView>(R.id.textViewNickName)
+            val textViewIntroduce = view.findViewById<TextView>(R.id.textViewIntroduce)
+            val textViewGender = view.findViewById<TextView>(R.id.textViewGender)
+            val textViewAge = view.findViewById<TextView>(R.id.textViewAge)
             // 내 정보 불러오기
             val auth = FirebaseAuth.getInstance()
             val currentUser = auth.currentUser
@@ -52,6 +57,10 @@ class MyFragment : Fragment() {
                             .load(user.image) // 불러올 이미지의 URL 또는 URI
                             .placeholder(R.drawable.user)
                             .into(imageViewUser) // 이미지를 표시할 ImageView
+                        textViewNickName.text = user.nickname
+                        textViewIntroduce.text = user.introduction
+                        textViewGender.text = user.gender.toString()
+                        textViewAge.text = user.age.toString()
                     } else {
                         // 사용자 정보를 가져오는 데 실패했을 때 처리
                         println("User not found or error occurred.")
