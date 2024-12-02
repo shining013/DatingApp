@@ -30,6 +30,13 @@ class HomeFragment : Fragment() {
 
         val layoutManager = GridLayoutManager(requireContext(), 2) // 열 개수 설정
         recyclerView.layoutManager = layoutManager
+
+        // 데이터 설정
+        adapter = MyAdapter(users)
+        recyclerView.adapter = adapter
+
+        fetchUsers()
+
         return view
     }
     fun fetchUsers() {
