@@ -46,8 +46,7 @@ class IntroActivity : AppCompatActivity() {
 
         val buttonSignUp = findViewById<TextView>(R.id.buttonSignUp)
         buttonSignUp.setOnClickListener{
-            val intent = Intent(this, UploadActivity::class.java)
-//            val intent = Intent(this, SignUpActivity::class.java)
+            val intent = Intent(this, SignUpActivity::class.java)
             startActivity(intent)
         }
     }

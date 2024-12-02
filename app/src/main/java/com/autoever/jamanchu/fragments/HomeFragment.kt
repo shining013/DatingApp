@@ -11,6 +11,7 @@ import androidx.recyclerview.widget.GridLayoutManager
 import androidx.recyclerview.widget.RecyclerView
 import com.autoever.jamanchu.R
 import com.autoever.jamanchu.models.User
+import com.bumptech.glide.Glide
 import com.google.firebase.Firebase
 import com.google.firebase.auth.FirebaseAuth
 import com.google.firebase.firestore.firestore
@@ -18,6 +19,8 @@ import com.google.firebase.firestore.firestore
 class HomeFragment : Fragment() {
     val users:MutableList<User> = mutableListOf()
     private lateinit var adapter: MyAdapter
+
+
 
     override fun onCreateView(
         inflater: LayoutInflater,
@@ -27,7 +30,6 @@ class HomeFragment : Fragment() {
         val view = inflater.inflate(R.layout.fragment_home, container, false)
 
         val recyclerView = view.findViewById<RecyclerView>(R.id.recyclerView)
-
         val layoutManager = GridLayoutManager(requireContext(), 2) // 열 개수 설정
         recyclerView.layoutManager = layoutManager
 
@@ -67,6 +69,7 @@ class HomeFragment : Fragment() {
 
 class MyAdapter(private val users: List<User>) : RecyclerView.Adapter<MyAdapter.ViewHolder>() {
     class ViewHolder(itemView: View) : RecyclerView.ViewHolder(itemView) {
+        val imageView: ImageView = itemView.findViewById(R.id.imageView)
         val textViewNick: TextView = itemView.findViewById(R.id.textViewNick)
         val textViewIntroduce: TextView = itemView.findViewById(R.id.textViewIntroduce)
         val textViewFriend: TextView = itemView.findViewById(R.id.textViewFriend)
@@ -83,6 +86,10 @@ class MyAdapter(private val users: List<User>) : RecyclerView.Adapter<MyAdapter.
         val user = users[position]
         holder.textViewNick.text = user.nickname
         holder.textViewIntroduce.text = user.introduction
+        Glide.with(holder.itemView.context)
+            .load(user.image)
+            .placeholder(R.drawable.user)
+            .into(holder.imageView)
     }
 
     override fun getItemCount() = users.size
