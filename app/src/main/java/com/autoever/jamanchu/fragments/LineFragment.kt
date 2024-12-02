@@ -1,17 +1,22 @@
 package com.autoever.jamanchu.fragments
 
+import android.content.Intent
 import android.os.Bundle
+import android.util.Log
 import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
 import android.widget.TextView
+import androidx.appcompat.app.AppCompatActivity
 import androidx.fragment.app.Fragment
 import androidx.lifecycle.lifecycleScope
 import androidx.recyclerview.widget.LinearLayoutManager
 import androidx.recyclerview.widget.RecyclerView
 import com.autoever.jamanchu.R
+import com.autoever.jamanchu.activities.LineActivity
 import com.autoever.jamanchu.api.RetrofitInstance
 import com.autoever.jamanchu.models.Line
+import com.google.android.material.floatingactionbutton.FloatingActionButton
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.launch
 import kotlinx.coroutines.withContext
@@ -20,12 +25,23 @@ class LineFragment : Fragment() {
     private lateinit var recyclerView: RecyclerView
     private lateinit var adapter: LineAdapter
     private val lines = mutableListOf<Line>()
+    private lateinit var floatingActionButton: FloatingActionButton
+
+    companion object {
+        private const val REQUEST_CODE_ADD_LINE = 100
+        private const val REQUEST_CODE_EDIT_LINE = 101
+    }
         override fun onCreateView(
             inflater: LayoutInflater,
             container: ViewGroup?,
             savedInstanceState: Bundle?
         ): View? {
             val view = inflater.inflate(R.layout.fragment_line, container, false)
+            floatingActionButton = view.findViewById(R.id.floatingActionButton)
+            floatingActionButton.setOnClickListener {
+                val intent = Intent(requireContext(), LineActivity::class.java)
+                startActivityForResult(intent, REQUEST_CODE_ADD_LINE) // 새 라인 추가
+            }
 
             // 리사이클러뷰
             recyclerView = view.findViewById(R.id.recyclerView)
@@ -55,6 +71,14 @@ class LineFragment : Fragment() {
                 }
             }
         }
+
+    override fun onActivityResult(requestCode: Int, resultCode: Int, data: Intent?) {
+        super.onActivityResult(requestCode, resultCode, data)
+
+        if (resultCode == AppCompatActivity.RESULT_OK && (requestCode == REQUEST_CODE_ADD_LINE)) {
+            fetchLines()
+        }
+    }
 }
 
 class LineAdapter(
