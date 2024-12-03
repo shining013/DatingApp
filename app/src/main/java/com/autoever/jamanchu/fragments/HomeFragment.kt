@@ -1,6 +1,7 @@
 package com.autoever.jamanchu.fragments
 
 import android.content.Context
+import android.content.Intent
 import android.os.Bundle
 import android.util.Log
 import android.view.LayoutInflater
@@ -13,6 +14,7 @@ import androidx.fragment.app.Fragment
 import androidx.recyclerview.widget.GridLayoutManager
 import androidx.recyclerview.widget.RecyclerView
 import com.autoever.jamanchu.R
+import com.autoever.jamanchu.activities.ChatActivity
 import com.autoever.jamanchu.models.User
 import com.bumptech.glide.Glide
 import com.google.firebase.Firebase
@@ -23,8 +25,6 @@ import com.google.firebase.firestore.firestore
 class HomeFragment : Fragment() {
     val users:MutableList<User> = mutableListOf()
     private lateinit var adapter: MyAdapter
-
-
 
     override fun onCreateView(
         inflater: LayoutInflater,
@@ -101,6 +101,15 @@ class MyAdapter(private val users: List<User>) : RecyclerView.Adapter<MyAdapter.
             val currentUser = auth.currentUser
             val currentUserId = currentUser!!.uid
             addFriend(holder.itemView.context, currentUserId, user.id) // context : 사용자가 위젯에 있는지 등에 관한 정보
+        }
+
+        // 채팅하기
+        holder.textViewChat.setOnClickListener {
+            val context = holder.itemView.context // Context 가져오기
+            val intent = Intent(context, ChatActivity::class.java)
+            // 채팅방 ID 전달
+            intent.putExtra("otherUser", user.id)
+            context.startActivity(intent) // Context를 사용해 startActivity 호출
         }
     }
 
