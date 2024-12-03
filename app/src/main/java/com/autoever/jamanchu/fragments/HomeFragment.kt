@@ -1,11 +1,14 @@
 package com.autoever.jamanchu.fragments
 
+import android.content.Context
 import android.os.Bundle
+import android.util.Log
 import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
 import android.widget.ImageView
 import android.widget.TextView
+import android.widget.Toast
 import androidx.fragment.app.Fragment
 import androidx.recyclerview.widget.GridLayoutManager
 import androidx.recyclerview.widget.RecyclerView
@@ -14,6 +17,7 @@ import com.autoever.jamanchu.models.User
 import com.bumptech.glide.Glide
 import com.google.firebase.Firebase
 import com.google.firebase.auth.FirebaseAuth
+import com.google.firebase.firestore.FirebaseFirestore
 import com.google.firebase.firestore.firestore
 
 class HomeFragment : Fragment() {
@@ -90,7 +94,41 @@ class MyAdapter(private val users: List<User>) : RecyclerView.Adapter<MyAdapter.
             .load(user.image)
             .placeholder(R.drawable.user)
             .into(holder.imageView)
+
+        // 친구 추가 동작
+        holder.textViewFriend.setOnClickListener {
+            val auth = FirebaseAuth.getInstance()
+            val currentUser = auth.currentUser
+            val currentUserId = currentUser!!.uid
+            addFriend(holder.itemView.context, currentUserId, user.id) // context : 사용자가 위젯에 있는지 등에 관한 정보
+        }
     }
 
     override fun getItemCount() = users.size
+
+    fun addFriend(context: Context, currentUserId: String, friendId: String) {
+        val userRef = FirebaseFirestore.getInstance()
+            .collection("users").document(currentUserId)
+        userRef.get().addOnSuccessListener { documentSnapshot ->
+            val currentFriends = documentSnapshot.get("friends")
+                as? List<String> ?: emptyList()
+            
+            // 친구 ID가 존재하지 않는 경우에만 추가
+            if (!currentFriends.contains(friendId)) {
+                val updatedFriends = currentFriends + friendId
+
+                userRef.update("friends", updatedFriends)
+                    .addOnSuccessListener {
+                        Log.d("Firestore","Friend added successfully")
+
+                        Toast.makeText(context, "친구가 추가되었습니다", Toast.LENGTH_SHORT).show()
+                    }
+                    .addOnFailureListener{ e->
+                        Log.w("Firestore","Error adding friend", e)
+                    }
+            } else {
+                Toast.makeText(context,"이미 친구로 추가된 사용자입니다.", Toast.LENGTH_SHORT).show()
+            }
+        }
+    }
 }
