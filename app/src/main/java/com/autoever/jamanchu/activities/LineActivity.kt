@@ -16,6 +16,7 @@ import kotlinx.coroutines.launch
 
 class LineActivity : AppCompatActivity() {
     private val firebaseAuth = FirebaseAuth.getInstance()
+    private var lineId: String? = null
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
         enableEdgeToEdge()
@@ -30,9 +31,36 @@ class LineActivity : AppCompatActivity() {
         val textViewComplete = findViewById<TextView>(R.id.textViewComplete)
         textViewComplete.setOnClickListener {
             val content = editText.text.toString()
-            addLine(content)
+            if (lineId == null) {
+                addLine(content)
+            } else {
+                updateLine(lineId!!, content)
+            }
+        }
+
+        // 라인 수정
+        lineId = intent.getStringExtra("lineId")
+        lineId?.let {
+            val lineContent: String = intent.getStringExtra("lineContent")!!
+            editText.setText(lineContent)
         }
     }
+
+    fun updateLine(id: String, text: String) {
+        val updatedLine = Line(id = id, user = firebaseAuth.currentUser?.uid!!, line = text)
+        lifecycleScope.launch {
+            try {
+                val response = RetrofitInstance.api.updateLine(id,updatedLine)
+                if (response.isSuccessful) {
+                    setResult(RESULT_OK)
+                    finish()
+                }
+            } catch (e: Exception) {
+                e.printStackTrace()
+            }
+        }
+    }
+
     fun addLine(text: String) {
         val userId = firebaseAuth.currentUser?.uid ?: return
         val newLine = Line(id = "", user = userId, line = text)
